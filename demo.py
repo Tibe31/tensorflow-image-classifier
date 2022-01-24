@@ -1,20 +1,15 @@
 # import the necessary packages
 from tensorflow.keras.preprocessing.image import img_to_array
 from tensorflow.keras.models import Model, save_model, load_model
-# from keras.models import save_model
 import tensorflow as tf
 import numpy as np
 import argparse
 import imutils
 import cv2
-from utilities.utils import get_key
 import time
 import os
 import random
-import msvcrt
 import matplotlib.pyplot as plt
-from utilities.utils_images import plot_activation, convert_image_to_max
-import pandas as pd
 import imghdr
 
 model_path = 'modelli/'
