@@ -55,7 +55,7 @@ model_checkpoint_callback = tf.keras.callbacks.ModelCheckpoint(
     save_weights_only=False,
     monitor='val_accuracy',
     mode='max',
-    save_best_only=False)
+    save_best_only=True)
 
 
 lr_schedule = tf.keras.optimizers.schedules.ExponentialDecay(
