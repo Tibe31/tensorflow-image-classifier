@@ -1,7 +1,6 @@
 # import the necessary packages
 from tensorflow.keras.preprocessing.image import img_to_array
 from tensorflow.keras.models import Model, save_model, load_model
-# from keras.models import save_model
 import tensorflow as tf
 import numpy as np
 import argparse
@@ -114,7 +113,7 @@ for directory in (os.listdir(PATH)):
             cv2.waitKey(0)
 
 
-
+#calculate confusion matrix for model evaluation
 from string import ascii_uppercase
 from pandas import DataFrame
 import numpy as np
