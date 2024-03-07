@@ -1,6 +1,14 @@
-INPUT_SHAPE = (200,200,3)
-BATCH_SIZE = [16]
-LR = 1e-3
-EPOCHS = 1000
-DECAY_AFTER_EPOCHS = 5
-Dropouts = [0.4]
+batch_size = 32
+learning_rate = 0.001
+label_dictionary = {
+    "KO": 0,
+    "OK": 1
+}
+epochs = 1000
+train_dir='immagini/train'
+val_dir='immagini/val'
+input_shape = (200,200,3)
+batch_sizes = [16]
+lr = 1e-3
+decay_after_n_epochs = 5
+dropouts = [0.4]

@@ -10,24 +10,16 @@ from tensorflow.keras.layers import BatchNormalization,Dropout,MaxPooling2D,Glob
 from datetime import date
 from sklearn.metrics import recall_score
 from tensorflow.keras.regularizers import l2
-from cfg import *
+import cfg
 
 
 today = date.today()
 print("Today's date:", today)
 
-train_dir='immagini/train'
-val_dir='immagini/val'
 
-dizionario_label = {
-    'KO': 0,
-    'OK': 1
-}
+for batch in cfg.batch_sizes:
 
-
-for b in BATCH_SIZE:
-
-    for d in Dropouts:
+    for drop_rate in cfg.dropouts:
 
 
         def random_contrast_and_blur(image):
@@ -36,7 +28,7 @@ for b in BATCH_SIZE:
             return adjusted_image
 
 
-        checkpoint_filepath = 'modelli/%s'%b+'_%s'%INPUT_SHAPE[0]+'_%s'%INPUT_SHAPE[1]+'_%s'%INPUT_SHAPE[2]+'_%s'%today+'_2'
+        checkpoint_filepath = 'modelli/%s'%batch+'_%s'%cfg.input_shape[0]+'_%s'%cfg.input_shape[1]+'_%s'%cfg.input_shape[2]+'_%s'%today+'_2'
 
 
         model_checkpoint_callback = tf.keras.callbacks.ModelCheckpoint(
@@ -56,17 +48,17 @@ for b in BATCH_SIZE:
                 val_accuracy = logs.get('val_binary_accuracy')
 
                 with open(self.file_path, 'a') as file:
-                    file.write(f'Dropout {d} - Epoch {epoch + 1}: Validation Accuracy: {val_accuracy:.4f} - Validation Loss: {val_loss:.4f}\n')
+                    file.write(f'Dropout {drop_rate} - Epoch {epoch + 1}: Validation Accuracy: {val_accuracy:.4f} - Validation Loss: {val_loss:.4f}\n')
 
 
-        file_path = 'val_metrics_%d'%b + '_%f'%d +'.txt'
+        file_path = 'val_metrics_%d'%batch + '_%f'%drop_rate +'.txt'
         write_val_metrics_callback = WriteValMetricsCallback(file_path)
 
-        vgg_conv = tf.keras.applications.mobilenet.MobileNet(weights='imagenet', include_top=False, input_shape = INPUT_SHAPE)
+        base_conv = tf.keras.applications.mobilenet.MobileNet(weights='imagenet', include_top=False, input_shape = cfg.input_shape)
         model = Sequential()
-        model.add(vgg_conv)
+        model.add(base_conv)
         model.add(GlobalAveragePooling2D())
-        model.add(Dropout(d))
+        model.add(Dropout(drop_rate))
         model.add(GaussianNoise(5))
         model.add(Dense(1,activation="sigmoid"))
 
@@ -90,22 +82,18 @@ for b in BATCH_SIZE:
         # Note that the validation data should not be augmented!
         test_datagen = tf.keras.preprocessing.image.ImageDataGenerator(
             rescale = 1./255.,
-            #brightness_range = [0.8,1.2],
-            #zoom_range = 0.01,
-            #width_shift_range=0.01,
-            #height_shift_range=0.01
         )
 
         train_generator = train_datagen.flow_from_directory(
-                train_dir,
-                target_size=(INPUT_SHAPE[0], INPUT_SHAPE[1]),
-                batch_size=b,
+                cfg.train_dir,
+                target_size=(cfg.input_shape[0], cfg.input_shape[1]),
+                batch_size=batch,
                 class_mode='binary',
                 shuffle=True)
         validation_generator = test_datagen.flow_from_directory(
-                val_dir,
-                target_size=(INPUT_SHAPE[0], INPUT_SHAPE[1]),
-                batch_size=b,
+                cfg.val_dir,
+                target_size=(cfg.input_shape[0], cfg.input_shape[1]),
+                batch_size=batch,
                 class_mode='binary',
                 shuffle = True)
 
@@ -118,9 +106,9 @@ for b in BATCH_SIZE:
 
 
         lr_schedule = tf.keras.optimizers.schedules.ExponentialDecay(
-            LR,
+            cfg.lr,
             decay_rate=0.99,
-            decay_steps=int((train_generator.samples/b))*DECAY_AFTER_EPOCHS,
+            decay_steps=int((train_generator.samples/batch))*cfg.decay_after_n_epochs,
             staircase=False)
 
         model.compile(optimizer = tf.keras.optimizers.SGD(learning_rate=lr_schedule),
@@ -131,7 +119,7 @@ for b in BATCH_SIZE:
 
         history = model.fit(
             train_generator,
-            epochs=EPOCHS,
+            epochs=cfg.epochs,
             validation_data=validation_generator,
             callbacks=[model_checkpoint_callback,write_val_metrics_callback]
         )
