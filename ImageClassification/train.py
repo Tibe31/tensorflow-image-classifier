@@ -1,15 +1,9 @@
 import tensorflow as tf
 import os
 import cv2
-import random
 import numpy as np
 import matplotlib.pyplot as plt
-from numpy import asarray
-from datetime import date
-from sklearn.metrics import recall_score
-from tensorflow.keras.regularizers import l2
 import cfg
-import json
 from augmentation_cfg import train_augmentation_parameters, val_augmentation_parameters
 from model.image_classification_model import ImageClassificationModel
 
@@ -45,7 +39,7 @@ for batch in cfg.batch_sizes:
         file_path = 'val_metrics_%d'%batch + '_%f'%drop_rate +'.txt'
         write_val_metrics_callback = WriteValMetricsCallback(file_path)
 
- 
+
 
 
 
