@@ -5,14 +5,13 @@ import random
 import numpy as np
 import matplotlib.pyplot as plt
 from numpy import asarray
-from tensorflow.keras.models import Sequential,load_model, Model
-from tensorflow.keras.layers import BatchNormalization,Dropout,MaxPooling2D,GlobalAveragePooling2D,Conv2D, GaussianNoise,Dense,Flatten
 from datetime import date
 from sklearn.metrics import recall_score
 from tensorflow.keras.regularizers import l2
 import cfg
 import json
 from augmentation_cfg import train_augmentation_parameters, val_augmentation_parameters
+from model.image_classification_model import ImageClassificationModel
 
 
 for batch in cfg.batch_sizes:
@@ -21,6 +20,7 @@ for batch in cfg.batch_sizes:
 
         checkpoint_filepath = cfg.checkpoint_filepath_main + '/%s'%batch+'_%s'%cfg.input_shape[0]+'_%s'%cfg.input_shape[1]+'_%s'%cfg.input_shape[2]+'_%s'
 
+        model = ImageClassificationModel(cfg, drop_rate).build_model()
 
         model_checkpoint_callback = tf.keras.callbacks.ModelCheckpoint(
             filepath=checkpoint_filepath,
@@ -45,13 +45,7 @@ for batch in cfg.batch_sizes:
         file_path = 'val_metrics_%d'%batch + '_%f'%drop_rate +'.txt'
         write_val_metrics_callback = WriteValMetricsCallback(file_path)
 
-        base_conv = tf.keras.applications.mobilenet.MobileNet(weights='imagenet', include_top=False, input_shape = cfg.input_shape)
-        model = Sequential()
-        model.add(base_conv)
-        model.add(GlobalAveragePooling2D())
-        model.add(Dropout(drop_rate))
-        model.add(GaussianNoise(5))
-        model.add(Dense(1,activation="sigmoid"))
+ 
 
 
 
