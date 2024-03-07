@@ -1,9 +1,3 @@
-#!/usr/bin/env python
-# coding: utf-8
-
-# In[1]:
-
-import csv
 import tensorflow as tf
 import os
 import cv2
@@ -11,20 +5,12 @@ import random
 import numpy as np
 import matplotlib.pyplot as plt
 from numpy import asarray
-from imutils import paths
 from tensorflow.keras.models import Sequential,load_model, Model
 from tensorflow.keras.layers import BatchNormalization,Dropout,MaxPooling2D,GlobalAveragePooling2D,Conv2D, GaussianNoise,Dense,Flatten
 from datetime import date
-from tensorflow.keras.applications.vgg16 import VGG16
-from tensorflow.keras.applications.densenet import DenseNet121
 from sklearn.metrics import recall_score
 from tensorflow.keras.regularizers import l2
-from PIL import ImageFilter
-# import mxnet as mx
-from numpy import random
-from PIL import Image, ImageEnhance
-
-
+from cfg import *
 
 
 today = date.today()
@@ -38,12 +24,6 @@ dizionario_label = {
     'OK': 1
 }
 
-INPUT_SHAPE = (200,200,3)
-BATCH_SIZE = [16]
-LR = 1e-3
-EPOCHS = 1000
-DECAY_AFTER_EPOCHS = 5
-Dropouts = [0.4]
 
 for b in BATCH_SIZE:
 
@@ -54,8 +34,8 @@ for b in BATCH_SIZE:
             contrast_factor = tf.random.uniform(shape=[], minval=0.8, maxval=1.2)  # Genera un fattore di contrasto casuale tra 0.5 e 1.5
             adjusted_image = tf.image.adjust_contrast(image, contrast_factor)
             return adjusted_image
-            
-           
+
+
         checkpoint_filepath = 'modelli/%s'%b+'_%s'%INPUT_SHAPE[0]+'_%s'%INPUT_SHAPE[1]+'_%s'%INPUT_SHAPE[2]+'_%s'%today+'_2'
 
 
@@ -65,8 +45,8 @@ for b in BATCH_SIZE:
             monitor='val_loss',
             mode='min',
             save_best_only=True)
-            
-            
+
+
         class WriteValMetricsCallback(tf.keras.callbacks.Callback):
             def __init__(self, file_path):
                 self.file_path = file_path
@@ -104,7 +84,7 @@ for b in BATCH_SIZE:
             brightness_range = [0.9,1.1],
             fill_mode='nearest'
             )
-            
+
 
 
         # Note that the validation data should not be augmented!
@@ -128,8 +108,8 @@ for b in BATCH_SIZE:
                 batch_size=b,
                 class_mode='binary',
                 shuffle = True)
-                
-                
+
+
         # x= train_generator.next()
         # for i in range(0,BATCH_SIZE-1):
             # image = x[0][i]
@@ -155,5 +135,3 @@ for b in BATCH_SIZE:
             validation_data=validation_generator,
             callbacks=[model_checkpoint_callback,write_val_metrics_callback]
         )
-
-
