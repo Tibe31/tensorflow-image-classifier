@@ -11,24 +11,15 @@ from datetime import date
 from sklearn.metrics import recall_score
 from tensorflow.keras.regularizers import l2
 import cfg
-
-
-today = date.today()
-print("Today's date:", today)
+import json
+from augmentation_cfg import train_augmentation_parameters, val_augmentation_parameters
 
 
 for batch in cfg.batch_sizes:
 
     for drop_rate in cfg.dropouts:
 
-
-        def random_contrast_and_blur(image):
-            contrast_factor = tf.random.uniform(shape=[], minval=0.8, maxval=1.2)  # Genera un fattore di contrasto casuale tra 0.5 e 1.5
-            adjusted_image = tf.image.adjust_contrast(image, contrast_factor)
-            return adjusted_image
-
-
-        checkpoint_filepath = 'modelli/%s'%batch+'_%s'%cfg.input_shape[0]+'_%s'%cfg.input_shape[1]+'_%s'%cfg.input_shape[2]+'_%s'%today+'_2'
+        checkpoint_filepath = cfg.checkpoint_filepath_main + '/%s'%batch+'_%s'%cfg.input_shape[0]+'_%s'%cfg.input_shape[1]+'_%s'%cfg.input_shape[2]+'_%s'
 
 
         model_checkpoint_callback = tf.keras.callbacks.ModelCheckpoint(
@@ -67,16 +58,7 @@ for batch in cfg.batch_sizes:
 
         print (model.summary())
 
-        train_datagen = tf.keras.preprocessing.image.ImageDataGenerator(
-            rescale = 1./255.,
-            rotation_range=2,
-            zoom_range = 0.02,
-            width_shift_range=0.02,
-            height_shift_range=0.02,
-            brightness_range = [0.9,1.1],
-            fill_mode='nearest'
-            )
-
+        train_datagen = tf.keras.preprocessing.image.ImageDataGenerator(**train_augmentation_parameters)
 
 
         # Note that the validation data should not be augmented!
