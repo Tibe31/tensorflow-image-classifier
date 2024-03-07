@@ -16,6 +16,8 @@ for batch in cfg.batch_sizes:
 
         model = ImageClassificationModel(cfg, drop_rate).build_model()
 
+        print (model.summary())
+
         model_checkpoint_callback = tf.keras.callbacks.ModelCheckpoint(
             filepath=checkpoint_filepath,
             save_weights_only=False,
@@ -39,12 +41,6 @@ for batch in cfg.batch_sizes:
         file_path = 'val_metrics_%d'%batch + '_%f'%drop_rate +'.txt'
         write_val_metrics_callback = WriteValMetricsCallback(file_path)
 
-
-
-
-
-
-        print (model.summary())
 
         train_datagen = tf.keras.preprocessing.image.ImageDataGenerator(**train_augmentation_parameters)
 
