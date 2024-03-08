@@ -58,13 +58,6 @@ for batch in cfg.batch_sizes:
                 shuffle = True)
 
 
-        # x= train_generator.next()
-        # for i in range(0,BATCH_SIZE-1):
-            # image = x[0][i]
-            # plt.imshow(image)
-            # plt.show()
-
-
         lr_schedule = tf.keras.optimizers.schedules.ExponentialDecay(
             cfg.lr,
             decay_rate=0.99,
