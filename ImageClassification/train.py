@@ -6,7 +6,8 @@ import matplotlib.pyplot as plt
 import cfg
 from augmentation_cfg import train_augmentation_parameters, val_augmentation_parameters
 from model.image_classification_model import ImageClassificationModel
-
+from utils.utils import show_augmentations
+from utils.callbacks import WriteValMetricsCallback
 
 for batch in cfg.batch_sizes:
 
@@ -25,7 +26,7 @@ for batch in cfg.batch_sizes:
             mode='min',
             save_best_only=True)
 
-        write_val_metrics_callback = WriteValMetricsCallback(cfg.file_path)
+        write_val_metrics_callback = WriteValMetricsCallback(cfg.path_metrics + 'val_metrics_%d'%batch + '_%f'%drop_rate +'.txt')
 
 
         train_datagen = tf.keras.preprocessing.image.ImageDataGenerator(**train_augmentation_parameters)
@@ -44,6 +45,9 @@ for batch in cfg.batch_sizes:
                 batch_size=batch,
                 class_mode='binary',
                 shuffle = True)
+                
+        if (cfg.show_augmentations == 'true'):
+            show_augmentations(batch, train_generator)
 
 
         lr_schedule = tf.keras.optimizers.schedules.ExponentialDecay(

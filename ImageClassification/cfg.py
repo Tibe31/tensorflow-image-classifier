@@ -14,4 +14,5 @@ decay_after_n_epochs = 5
 dropouts = [0.4]
 checkpoint_filepath_main = 'modelli'
 gaussian_noise = 5
-file_path = 'val_metrics_%d'%batch + '_%f'%drop_rate +'.txt'
+path_metrics = 'results/'
+show_augmentations = 'true'
