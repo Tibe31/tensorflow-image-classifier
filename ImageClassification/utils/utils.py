@@ -1,6 +1,4 @@
-
-
-
+import matplotlib.pyplot as plt
 
 def show_augmentations(BATCH_SIZE,x):
   x= train_generator.next()
