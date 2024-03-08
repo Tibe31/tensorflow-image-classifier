@@ -37,9 +37,7 @@ for batch in cfg.batch_sizes:
                 with open(self.file_path, 'a') as file:
                     file.write(f'Dropout {drop_rate} - Epoch {epoch + 1}: Validation Accuracy: {val_accuracy:.4f} - Validation Loss: {val_loss:.4f}\n')
 
-
-        file_path = 'val_metrics_%d'%batch + '_%f'%drop_rate +'.txt'
-        write_val_metrics_callback = WriteValMetricsCallback(file_path)
+        write_val_metrics_callback = WriteValMetricsCallback(cfg.file_path)
 
 
         train_datagen = tf.keras.preprocessing.image.ImageDataGenerator(**train_augmentation_parameters)
