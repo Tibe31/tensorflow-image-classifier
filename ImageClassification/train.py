@@ -44,11 +44,7 @@ for batch in cfg.batch_sizes:
 
         train_datagen = tf.keras.preprocessing.image.ImageDataGenerator(**train_augmentation_parameters)
 
-
-        # Note that the validation data should not be augmented!
-        test_datagen = tf.keras.preprocessing.image.ImageDataGenerator(
-            rescale = 1./255.,
-        )
+        test_datagen = tf.keras.preprocessing.image.ImageDataGenerator(**val_augmentation_parameters)
 
         train_generator = train_datagen.flow_from_directory(
                 cfg.train_dir,
