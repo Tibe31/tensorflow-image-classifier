@@ -12,7 +12,9 @@ batch_sizes = [16]
 lr = 1e-3
 decay_after_n_epochs = 5
 dropouts = [0.4]
-checkpoint_filepath_main = 'modelli'
+checkpoint_filepath = 'results/'
 gaussian_noise = 5
-path_metrics = 'results/'
-show_augmentations = 'true'
+show_augmentations = 'false'
+#metrics
+monitor = 'val_loss'
+mode = 'min'

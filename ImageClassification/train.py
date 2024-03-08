@@ -7,27 +7,22 @@ import cfg
 from augmentation_cfg import train_augmentation_parameters, val_augmentation_parameters
 from model.image_classification_model import ImageClassificationModel
 from utils.utils import show_augmentations
-from utils.callbacks import WriteValMetricsCallback
+from utils.callbacks import ModelCheckpointCallback
+
+os.environ['TF_ENABLE_ONEDNN_OPTS'] = '0'
+
 
 for batch in cfg.batch_sizes:
 
     for drop_rate in cfg.dropouts:
 
-        checkpoint_filepath = cfg.checkpoint_filepath_main + '/%s'%batch+'_%s'%cfg.input_shape[0]+'_%s'%cfg.input_shape[1]+'_%s'%cfg.input_shape[2]+'_%s'
-
         model = ImageClassificationModel(cfg, drop_rate).build_model()
 
         print (model.summary())
-
-        model_checkpoint_callback = tf.keras.callbacks.ModelCheckpoint(
-            filepath=checkpoint_filepath,
-            save_weights_only=False,
-            monitor='val_loss',
-            mode='min',
-            save_best_only=True)
-
-        write_val_metrics_callback = WriteValMetricsCallback(cfg.path_metrics + 'val_metrics_%d'%batch + '_%f'%drop_rate +'.txt')
-
+        
+        #callbacks del modello
+        callback_instance = ModelCheckpointCallback(cfg.checkpoint_filepath + '/%s'%batch+'_%s'%cfg.input_shape[0]+'_%s'%cfg.input_shape[1]+'_%s'%cfg.input_shape[2], cfg.monitor, cfg.mode)
+        model_checkpoint_callback = callback_instance.get_callback()
 
         train_datagen = tf.keras.preprocessing.image.ImageDataGenerator(**train_augmentation_parameters)
 
@@ -61,10 +56,9 @@ for batch in cfg.batch_sizes:
                       metrics =[tf.keras.metrics.BinaryAccuracy(threshold = 0.5),tf.keras.metrics.FalsePositives(),tf.keras.metrics.FalseNegatives()])
 
 
-
         history = model.fit(
             train_generator,
             epochs=cfg.epochs,
             validation_data=validation_generator,
-            callbacks=[model_checkpoint_callback,write_val_metrics_callback]
+            callbacks=[model_checkpoint_callback]
         )
