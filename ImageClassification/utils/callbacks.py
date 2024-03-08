@@ -1,12 +1,19 @@
 import tensorflow as tf
 
-class WriteValMetricsCallback(tf.keras.callbacks.Callback):
-    def __init__(self, file_path):
-        self.file_path = file_path
 
-    def on_epoch_end(self, epoch, drop_rate, logs=None):
-        val_loss = logs.get('val_loss')
-        val_accuracy = logs.get('val_binary_accuracy')
+class ModelCheckpointCallback:
+    def __init__(self, checkpoint_filepath, monitor, mode, save_best_only = True):
+        self.checkpoint_filepath = checkpoint_filepath
+        self.monitor = monitor
+        self.mode = mode
+        self.save_best_only = save_best_only
 
-        with open(self.file_path, 'a') as file:
-            file.write(f'Dropout {drop_rate} - Epoch {epoch + 1}: Validation Accuracy: {val_accuracy:.4f} - Validation Loss: {val_loss:.4f}\n')
+
+    def get_callback(self):
+        return tf.keras.callbacks.ModelCheckpoint(
+            filepath=self.checkpoint_filepath,
+            save_weights_only=False,
+            monitor=self.monitor,
+            mode=self.mode,
+            save_best_only=self.save_best_only
+        )
