@@ -9,9 +9,6 @@ from model.image_classification_model import ImageClassificationModel
 from utils.utils import show_augmentations
 from utils.callbacks import ModelCheckpointCallback
 
-os.environ['TF_ENABLE_ONEDNN_OPTS'] = '0'
-
-
 for batch in cfg.batch_sizes:
 
     for drop_rate in cfg.dropouts:
