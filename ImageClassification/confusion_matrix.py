@@ -30,7 +30,8 @@ args = vars(ap.parse_args())
 mylist = args["model"].split('/')
 name_model = mylist[1]
 name_model_split = name_model.split('_')
-INPUT_SHAPE = (200,200,3)
+INPUT_SHAPE = (name_model_split[1],name_model_split[2],name_model_split[3])
+
 print (INPUT_SHAPE)
 PATH = 'test'
 
