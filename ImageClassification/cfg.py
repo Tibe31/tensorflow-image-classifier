@@ -18,3 +18,4 @@ show_augmentations = 'false'
 #metrics
 monitor = 'val_loss'
 mode = 'min'
+test_path = 'test'
