@@ -18,6 +18,7 @@ import pandas as pd
 import imghdr
 from sklearn.metrics import precision_score, recall_score
 from sklearn.metrics import f1_score
+from cfg import test_path as PATH
 
 
 # construct the argument parse and parse the arguments
