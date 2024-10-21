@@ -19,7 +19,7 @@ import imghdr
 from sklearn.metrics import precision_score, recall_score
 from sklearn.metrics import f1_score
 from cfg import test_path as PATH
-
+import shututil
 
 # construct the argument parse and parse the arguments
 ap = argparse.ArgumentParser()
@@ -65,6 +65,9 @@ predicted_probabilities = []
 
 
 for directory in (os.listdir(PATH)):
+    #se la directory esiste la cancello
+    if os.path.exists('out/' + directory):
+      shutil.rmtree('out/' + directory)
     os.mkdir('out/' + directory)
     print ('inizio nuova classe')
 
@@ -72,12 +75,10 @@ for directory in (os.listdir(PATH)):
         count_images = count_images + 1
         type = imghdr.what(PATH + '/' + directory+'/'+img)
         image_read = cv2.imread(PATH + '/' + directory+'/'+img)
-        # print (img,directory)
-        #image = image[20:700, 0:image.shape[1]]
         image = cv2.resize(image_read, (int(INPUT_SHAPE[1]),int(INPUT_SHAPE[0])), cv2.INTER_AREA)
         show_image = image.copy()
         image = image.astype("float") / 255.0
-        # image = img_to_array(image)
+      
         if (INPUT_SHAPE[2]=='1'):
             last_axis = -1
             image = np.expand_dims(image, last_axis)
@@ -90,14 +91,8 @@ for directory in (os.listdir(PATH)):
         gt_label = int(directory)
         print (gt_label)
         predicted_probabilities.append(predizioni[0])
-        ground_truth_labels.append(gt_label)
-        
-        # if (gt_label == 0):
-            # scores_negative.append(predizioni)
+        ground_truth_labels.append(gt_label)       
         cv2.imwrite('out/' + directory + '/' + str(predizioni[0]) + '_' + img, image_read)
-        # else:
-            # cv2.imwrite('out/' + '1' + '/' + str(predizioni[0]) + '_' + img, image_read)
-            # if (predizioni[0] < 0.5):
         scores_positive.append(predizioni)
 
 def find_best_threshold(labels, scores):
