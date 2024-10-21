@@ -1,6 +1,5 @@
 # import the necessary packages
 from tensorflow.keras.models import Model, save_model, load_model
-# from keras.models import save_model
 import tensorflow as tf
 from tensorflow import keras
 import numpy as np
