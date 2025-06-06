@@ -1,0 +1,48 @@
+# === Data Directories ===
+train_dir: immagini_st3/train
+val_dir: immagini_st3/val
+test_path: test_st3
+
+# === Input Configuration ===
+input_shape: [512, 512, 3]
+batch_size: 8
+
+# === Model Settings ===
+use_pretrained_model: false
+pretrained_model_path: ""  # Inserire se use_pretrained_model è true
+dropout: 0.5
+gaussian_noise: 1
+show_augmentations: false
+
+# === Training Configuration ===
+epochs: 350
+lr: 0.001
+decay_after_n_epochs: 5
+
+# === Callbacks and Metrics ===
+checkpoint_filepath: modelli/
+monitor_metric: val_binary_accuracy
+mode: max
+
+# === Label Dictionary (definire manualmente se necessario) ===
+label_dictionary:
+  KO: 0
+  OK: 1
+# oppure generare dinamicamente via script Python:
+# label_dictionary = {label: idx for idx, label in enumerate(sorted(os.listdir(train_dir)))}
+
+# === Augmentation Parameters ===
+augmentation:
+  train:
+    rescale: 0.00392156862745098  # 1./255.
+    rotation_range: 3
+    zoom_range: 0.03
+    width_shift_range: 0.03
+    height_shift_range: 0.03
+    brightness_range: [0.7, 1.3]
+    vertical_flip: false
+    horizontal_flip: false
+    fill_mode: constant
+    cval: 0
+  val:
+    rescale: 0.00392156862745098  # 1./255.

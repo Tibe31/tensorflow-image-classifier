@@ -1,0 +1,12 @@
+# Ignora immagini comuni
+*.jpg
+*.jpeg
+*.png
+*.gif
+*.bmp
+*.tiff
+*.webp
+
+# Ignora tutte le immagini dentro la cartella immagini_st3 (e sottocartelle)
+immagini_st3/**/*.jpg
+immagini_st3/**/*.png
