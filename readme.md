@@ -1,7 +1,9 @@
 # Image Classification with TensorFlow
 
 This repository provides a configurable image classification training pipeline using TensorFlow and Keras. It supports training from scratch or fine-tuning a pre-trained model, with customizable data augmentation, callbacks, and training parameters defined in a YAML configuration file.
-![Logo TensorFlow](https://huxleyparlour.com/wp-content/uploads/2021/06/joel-sternfeld-american-propsects-Lake-Oswego-Oregon-2048x1626.jpg)
+
+<img src="https://huxleyparlour.com/wp-content/uploads/2021/06/joel-sternfeld-american-propsects-Lake-Oswego-Oregon-2048x1626.jpg" alt="Logo TensorFlow" width="500"/>
+
 ---
 
 ## Project Structure
