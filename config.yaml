@@ -12,7 +12,6 @@ use_pretrained_model: false
 pretrained_model_path: ""  # Inserire se use_pretrained_model è true
 dropout: 0.5
 gaussian_noise: 1
-show_augmentations: false
 
 # === Training Configuration ===
 epochs: 350
@@ -32,6 +31,7 @@ label_dictionary:
 # label_dictionary = {label: idx for idx, label in enumerate(sorted(os.listdir(train_dir)))}
 
 # === Augmentation Parameters ===
+show_augmentations: false
 augmentation:
   train:
     rescale: 0.00392156862745098  # 1./255.
