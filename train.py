@@ -1,7 +1,6 @@
 import tensorflow as tf
 import datetime
 import os
-import cv2
 import numpy as np
 from utils.config_loader import Config
 from model.image_classification_model import ImageClassificationModel
@@ -43,7 +42,6 @@ callback_instance = ModelCheckpointCallback(
     mode=config['mode'],
     save_best_only=True
 )
-log_dir = os.path.join("logs", datetime.datetime.now().strftime("%Y%m%d-%H%M%S"))
 model_checkpoint_callback = callback_instance.get_callback()
 
 # === Data Generators ===
