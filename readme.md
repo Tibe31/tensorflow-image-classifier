@@ -4,7 +4,7 @@ This repository provides a configurable image classification training pipeline u
 
 ---
 
-## 📁 Project Structure
+## Project Structure
 
 - `train.py` — Main script to train the model.
 - `config.yaml` — Centralized configuration file for training parameters.
@@ -14,7 +14,7 @@ This repository provides a configurable image classification training pipeline u
 
 ---
 
-## ⚙️ Setup Instructions
+## Setup Instructions
 
 1. Open a terminal or command prompt.
 2. Create a virtual environment using Anaconda:
@@ -36,7 +36,7 @@ This repository provides a configurable image classification training pipeline u
 
 ---
 
-## 🚀 Training
+## Training
 
 After setting up the environment and configuring `config.yaml`, run the training script:
 
@@ -48,7 +48,7 @@ The model will be trained on the dataset specified in the configuration file, an
 
 ---
 
-## 📊 Model Evaluation
+## Model Evaluation
 
 The `confusion_matrix.py` script evaluates a trained binary classification model using a test set. It calculates a custom F1-score and can determine the optimal classification threshold. Optionally, it saves test images into structured folders for easier inspection.
 
