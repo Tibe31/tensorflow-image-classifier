@@ -16,14 +16,13 @@ os.environ['TF_ENABLE_ONEDNN_OPTS'] = '0'
 train_augmentation_parameters = config['augmentation']['train']
 val_augmentation_parameters = config['augmentation']['val']
 
-
 # === Parametri da config ===
 drop_rate = config['dropout']
 batch = config['batch_size']
 
 # === Costruzione modello ===
 if config['use_pretrained_model']:
-    print("Carico modello preaddestrato da: {config['pretrained_model_path']}")
+    print(f"Carico modello preaddestrato da: {config['pretrained_model_path']}")
     model = tf.keras.models.load_model(config['pretrained_model_path'])
     for layer in model.layers:
         layer.trainable = True
@@ -32,12 +31,11 @@ else:
     model = ImageClassificationModel(config.cfg, drop_rate).build_model()
     print(model.summary())
 
-# === Callback ===
+timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
+model_name = f"{batch}_{config['input_shape'][0]}_{config['input_shape'][1]}_{config['input_shape'][2]}_{timestamp}"
+
 callback_instance = ModelCheckpointCallback(
-    os.path.join(
-        config['checkpoint_filepath'],
-        f"{batch}_{config['input_shape'][0]}_{config['input_shape'][1]}_{config['input_shape'][2]}"
-    ),
+    os.path.join(config['checkpoint_filepath'], model_name),
     monitor=config['monitor_metric'],
     mode=config['mode'],
     save_best_only=True
