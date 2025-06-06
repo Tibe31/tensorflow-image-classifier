@@ -4,16 +4,15 @@ import argparse
 import numpy as np
 import tensorflow as tf
 from tensorflow.keras.models import load_model
-from tensorflow.keras.metrics import Metric
 from sklearn.metrics import f1_score
-import cfg  # importiamo la configurazione
+import cfg  # configurazione con percorso dati
 
 # ---------------------------
-# Custom F1Score metric
+# Custom F1 Score Metric
 # ---------------------------
 class F1Score(tf.keras.metrics.Metric):
     def __init__(self, name='val_f1_score', threshold=0.5, **kwargs):
-        super(F1Score, self).__init__(name=name, **kwargs)
+        super().__init__(name=name, **kwargs)
         self.threshold = threshold
         self.tp = self.add_weight(name='tp', initializer='zeros')
         self.fp = self.add_weight(name='fp', initializer='zeros')
@@ -37,111 +36,96 @@ class F1Score(tf.keras.metrics.Metric):
         self.fn.assign(0)
 
     def get_config(self):
-        config = super(F1Score, self).get_config()
+        config = super().get_config()
         config.update({"threshold": self.threshold})
         return config
 
-
 # ---------------------------
-# Threshold optimization
+# Trova la soglia ottimale
 # ---------------------------
 def find_best_threshold(labels, scores):
     thresholds = np.linspace(0, 1, num=100)
-    best_f1 = 0
-    best_threshold = 0
-    for threshold in thresholds:
-        predicted = (np.array(scores) >= threshold).astype(int)
-        f1 = f1_score(labels, predicted)
+    best_f1, best_threshold = 0, 0
+    for t in thresholds:
+        preds = (np.array(scores) >= t).astype(int)
+        f1 = f1_score(labels, preds)
         if f1 > best_f1:
-            best_f1 = f1
-            best_threshold = threshold
+            best_f1, best_threshold = f1, t
     return best_threshold, best_f1
-
 
 # ---------------------------
 # Main
 # ---------------------------
-ap = argparse.ArgumentParser()
-ap.add_argument("-m", "--model", required=True, help="path to trained model folder")
-ap.add_argument("-s", "--threshold", type=float, default=0.5, help="soglia per classificazione")
-ap.add_argument("--mode", choices=["standard", "folder_split"], default="standard",
-                help="modalità di salvataggio immagini: standard oppure folder_split per scarti/buoni")
-args = vars(ap.parse_args())
+def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument("-m", "--model", required=True, help="Percorso al modello salvato")
+    parser.add_argument("-s", "--threshold", type=float, default=0.5, help="Soglia iniziale di classificazione")
+    parser.add_argument("--mode", choices=["standard", "folder_split"], default="standard",
+                        help="Modalità di salvataggio immagini: standard o folder_split")
+    args = parser.parse_args()
 
-# 🧠 Estrai input_shape dal nome file
-model_path = args["model"]
-filename = os.path.basename(model_path)
-try:
-    shape_part = filename.split('_')[:4]  # es: 8_512_512_3
-    input_shape = tuple(map(int, shape_part[1:]))  # (512, 512, 3)
-except Exception as e:
-    print(f"[ERRORE] Impossibile estrarre input_shape da: {filename}, uso default (512, 512, 3)")
-    input_shape = (512, 512, 3)
+    model_path = args.model
+    threshold = args.threshold
+    mode = args.mode
+    data_path = cfg.test_path
 
-DATA_PATH = cfg.test_path  # prendo il path dal cfg
-threshold = args["threshold"]
-mode = args["mode"]
+    # Estrai input_shape dal nome del file modello
+    try:
+        shape_part = os.path.basename(model_path).split('_')[:4]
+        input_shape = tuple(map(int, shape_part[1:]))
+    except Exception:
+        print(f"[ERRORE] Impossibile estrarre input_shape da nome file. Uso default (512, 512, 3)")
+        input_shape = (512, 512, 3)
 
-# ✅ Carica modello con oggetti custom
-print("[INFO] Caricamento modello...")
-model = load_model(model_path, compile=False)
-model.compile(
-    optimizer="sgd",  # anche placeholder
-    loss="binary_crossentropy",
-    metrics=[F1Score(name="val_f1_score")])
-print("[INFO] Modello caricato.")
-print(model.summary())
+    # Carica modello
+    print("[INFO] Caricamento modello...")
+    model = load_model(model_path, compile=False)
+    model.compile(
+        optimizer="sgd",  # Placeholder
+        loss="binary_crossentropy",
+        metrics=[F1Score(name="val_f1_score")]
+    )
+    print("[INFO] Modello caricato.")
+    print(model.summary())
 
-count_images = 0
-ground_truth_labels = []
-predicted_probabilities = []
+    count, y_true, y_scores = 0, [], []
 
-if mode == "folder_split":
-    # Creo le cartelle "0" e "1" dentro out
-    output_dirs = {
-        0: os.path.join("out", "0"),
-        1: os.path.join("out", "1")
-    }
-    for d in output_dirs.values():
-        os.makedirs(d, exist_ok=True)
+    if mode == "folder_split":
+        output_dirs = {0: os.path.join("out", "0"), 1: os.path.join("out", "1")}
+        for path in output_dirs.values():
+            os.makedirs(path, exist_ok=True)
 
-for directory in os.listdir(DATA_PATH):
-    dir_path = os.path.join(DATA_PATH, directory)
-
-    # In modalità standard creo sotto-cartella out/<classe>
-    if mode == "standard":
-        output_dir = os.path.join('out', directory)
-        os.makedirs(output_dir, exist_ok=True)
-
-    print(f"[INFO] Analizzo classe: {directory}")
-
-    for img_name in os.listdir(dir_path):
-        count_images += 1
-        image_path = os.path.join(dir_path, img_name)
-        image_bgr = cv2.imread(image_path)
-        image_resized = cv2.resize(image_bgr, (input_shape[1], input_shape[0]))
-        image_normalized = image_resized.astype("float32") / 255.0
-        image_input = np.expand_dims(image_normalized, axis=0)
-
-        # Predizione
-        prediction = model.predict(image_input)[0][0]
-        predicted_probabilities.append(prediction)
-        ground_truth_labels.append(int(directory))
-
-        output_filename = f"{prediction:.4f}_{img_name}"
-
+    for class_dir in os.listdir(data_path):
+        class_path = os.path.join(data_path, class_dir)
+        output_dir = os.path.join("out", class_dir)
         if mode == "standard":
-            output_path = os.path.join(output_dir, output_filename)
-        else:  # folder_split
-            label_folder = 1 if prediction >= threshold else 0
-            output_path = os.path.join(output_dirs[label_folder], output_filename)
+            os.makedirs(output_dir, exist_ok=True)
 
-        cv2.imwrite(output_path, image_bgr)
+        print(f"[INFO] Elaborazione classe: {class_dir}")
+        for img_file in os.listdir(class_path):
+            count += 1
+            img_path = os.path.join(class_path, img_file)
+            img = cv2.imread(img_path)
+            img_resized = cv2.resize(img, (input_shape[1], input_shape[0]))
+            img_normalized = img_resized.astype("float32") / 255.0
+            input_tensor = np.expand_dims(img_normalized, axis=0)
 
-# ---------------------------
-# Valutazione finale
-# ---------------------------
-best_threshold, best_f1 = find_best_threshold(ground_truth_labels, predicted_probabilities)
-print(f"[INFO] Totale immagini analizzate: {count_images}")
-print(f"[INFO] Miglior soglia trovata: {best_threshold:.3f}")
-print(f"[INFO] F1-score ottimale: {best_f1:.3f}")
+            score = model.predict(input_tensor, verbose=0)[0][0]
+            y_scores.append(score)
+            y_true.append(int(class_dir))
+
+            output_name = f"{score:.4f}_{img_file}"
+            if mode == "standard":
+                cv2.imwrite(os.path.join(output_dir, output_name), img)
+            else:
+                label_dir = output_dirs[1 if score >= threshold else 0]
+                cv2.imwrite(os.path.join(label_dir, output_name), img)
+
+    # Risultati finali
+    best_thresh, best_f1 = find_best_threshold(y_true, y_scores)
+    print(f"[INFO] Immagini elaborate: {count}")
+    print(f"[INFO] Soglia ottimale trovata: {best_thresh:.3f}")
+    print(f"[INFO] F1-score massimo: {best_f1:.3f}")
+
+if __name__ == "__main__":
+    main()
