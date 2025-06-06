@@ -1,36 +1,37 @@
 import subprocess
 import shutil
 import time
+import os
 
-# Lista di configurazioni
+# Lista di configurazioni (YAML)
 trainings = [
     {
-        "cfg": "cfg_st1_best.py",
-        "aug": "augmentation_cfg_1.py",
+        "config_yaml": "configs/config_st1.yaml",
+        "augmentation_yaml": "configs/augmentation_st1.yaml",
         "name": "ST1"
     },
     {
-        "cfg": "cfg_st3_best.py",
-        "aug": "augmentation_cfg_3.py",
+        "config_yaml": "configs/config_st3.yaml",
+        "augmentation_yaml": "configs/augmentation_st3.yaml",
         "name": "ST3"
     }
 ]
 
 for t in trainings:
-    print(f"\n🧠 Avvio training per {t['name']}...")
+    print(f"\nAvvio training per {t['name']}...")
 
-    # Copia file config nel modulo usato da train_weights
-    shutil.copy(t["cfg"], "cfg.py")
-    shutil.copy(t["aug"], "augmentation_cfg.py")
+    # Copia i file nella posizione attesa da Config
+    shutil.copy(t["config_yaml"], "config.yaml")
+    shutil.copy(t["augmentation_yaml"], "augmentation.yaml")
 
-    # Avvia train_weights.py
+    # Avvia train.py
     result = subprocess.run(["python", "train.py"])
 
     if result.returncode != 0:
-        print(f"❌ Training {t['name']} fallito.")
+        print(f"Training {t['name']} fallito. Interruzione.")
         break
 
-    print(f"✅ Training {t['name']} completato.")
+    print(f"Training {t['name']} completato.")
     time.sleep(2)
 
-print("\n🏁 Tutti i training completati.")
+print("\nTutti i training completati.")
