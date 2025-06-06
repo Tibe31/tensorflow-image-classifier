@@ -1,74 +1,74 @@
 # Image Classification with TensorFlow
 
-This repository contains a configurable image classification training pipeline using TensorFlow and Keras. It supports training from scratch or fine-tuning a pre-trained model, with configurable data augmentations, callbacks, and training parameters via a YAML file.
+This repository provides a configurable image classification training pipeline using TensorFlow and Keras. It supports training from scratch or fine-tuning a pre-trained model, with customizable data augmentation, callbacks, and training parameters defined in a YAML configuration file.
 
-## Project Structure
+---
 
-- `train.py`: Main script to train the model.
-- `config.yaml`: Centralized configuration file for training parameters.
-- `model/`: Contains the model architecture definition.
-- `utils/`: Contains utility functions, configuration loader, augmentation visualizations, and custom callbacks.
-- `confusion_matrix.py`: Script to evaluate model performance on a test set with custom F1-score and threshold optimization.
+## 📁 Project Structure
 
-## Setup Instructions
+- `train.py` — Main script to train the model.
+- `config.yaml` — Centralized configuration file for training parameters.
+- `model/` — Contains model architecture definitions.
+- `utils/` — Utility functions, configuration loader, data augmentation previews, and custom callbacks.
+- `confusion_matrix.py` — Script for model evaluation with custom F1-score metric and threshold optimization.
 
-To configure a virtual environment and train the classifier:
+---
 
-1. Open a command prompt;
-2. Create a virtual environment with Anaconda:
+## ⚙️ Setup Instructions
+
+1. Open a terminal or command prompt.
+2. Create a virtual environment using Anaconda:
    ```bash
-   conda create -n "name_env" python=3.9
+   conda create -n name_env python=3.9
    ```
 3. Activate the environment:
    ```bash
-   conda activate "name_env"
+   conda activate name_env
    ```
-4. Install pip (if not already installed):
+4. Ensure `pip` is installed:
    ```bash
    conda install pip
    ```
-5. Install dependencies:
+5. Install project dependencies:
    ```bash
    pip install -r requirements.txt
    ```
 
-## Training
+---
 
-Once the environment is set up and the configuration file is properly edited, run the training script:
+## 🚀 Training
+
+After setting up the environment and configuring `config.yaml`, run the training script:
 
 ```bash
 python train.py
 ```
 
-The model will be trained on the dataset defined in `config.yaml`, and the best model will be saved based on the monitored metric.
+The model will be trained on the dataset specified in the configuration file, and the best model will be saved according to the selected evaluation metric.
 
-## Model Evaluation
+---
 
-The script confusion_matrix.py evaluates a trained binary classification model by analyzing its predictions on a test dataset. It computes a custom F1-score and can automatically find the best classification threshold. It also optionally saves test images into structured folders for inspection.
+## 📊 Model Evaluation
 
-Features
-Custom F1-score metric implemented as a TensorFlow/Keras metric.
+The `confusion_matrix.py` script evaluates a trained binary classification model using a test set. It calculates a custom F1-score and can determine the optimal classification threshold. Optionally, it saves test images into structured folders for easier inspection.
 
-Two image-saving modes:
+### Key Features
 
-standard: saves images by their true class.
+- Custom F1-score metric (TensorFlow/Keras-compatible)
+- Automatic threshold optimization
+- Two image-saving modes:
+  - `standard`: saves images by true class
+  - `folder_split`: saves images into `out/0` and `out/1` based on predictions
+- Compatible with models trained using `train.py`
 
-folder_split: saves images into folders based on predicted class.
+### Usage
 
-Automatic threshold optimization for F1-score.
+```bash
+python confusion_matrix.py -m <path_to_model> [-s <threshold>] [--mode standard|folder_split]
+```
 
-Compatible with models trained and saved by train.py.
+### Parameters
 
-   ```bash
-   python confusion_matrix.py -m <path_to_model> [-s <threshold>] [--mode standard|folder_split]
-   ``
-Parameters
--m, --model: Path to the saved model (required).
-
--s, --threshold: Classification threshold (default: 0.5).
-
---mode: Output mode:
-
-standard: saves images under folders matching ground-truth labels.
-
-folder_split: saves images into out/0 and out/1 based on predicted class.
+- `-m`, `--model`: Path to the saved model (required)
+- `-s`, `--threshold`: Classification threshold (default: 0.5)
+- `--mode`: Output mode: `standard` or `folder_split`
