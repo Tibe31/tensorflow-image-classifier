@@ -1,7 +1,7 @@
 # === Data Directories ===
-train_dir: immagini_st3/train
-val_dir: immagini_st3/val
-test_path: test_st3
+train_dir: st1/train
+val_dir: st1/val
+test_path: st1/val
 
 # === Input Configuration ===
 input_shape: [512, 512, 3]
@@ -12,9 +12,10 @@ use_pretrained_model: false
 pretrained_model_path: ""  # Inserire se use_pretrained_model è true
 dropout: 0.5
 gaussian_noise: 1
+show_augmentations: true
 
 # === Training Configuration ===
-epochs: 350
+epochs: 600
 lr: 0.001
 decay_after_n_epochs: 5
 
@@ -31,12 +32,11 @@ label_dictionary:
 # label_dictionary = {label: idx for idx, label in enumerate(sorted(os.listdir(train_dir)))}
 
 # === Augmentation Parameters ===
-show_augmentations: false
 augmentation:
   train:
     rescale: 0.00392156862745098  # 1./255.
-    rotation_range: 3
-    zoom_range: 0.03
+    rotation_range: 15
+    zoom_range: 0.08
     width_shift_range: 0.03
     height_shift_range: 0.03
     brightness_range: [0.7, 1.3]
@@ -46,3 +46,9 @@ augmentation:
     cval: 0
   val:
     rescale: 0.00392156862745098  # 1./255.
+
+auto_split:
+  enabled: true
+  source_dir: "st1"
+  output_dir: "tmp_split"
+  val_split: 0.1

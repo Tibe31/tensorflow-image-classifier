@@ -2,21 +2,22 @@ import tensorflow as tf
 import datetime
 import os
 import numpy as np
+
 from utils.config_loader import Config
 from model.image_classification_model import ImageClassificationModel
 from utils.utils import show_augmentations
 from utils.callbacks import ModelCheckpointCallback
+from utils.data_splitter import perform_auto_split  # ⬅️ nuovo import
 
-# Carica la configurazione da YAML
+# === CONFIG ===
 config = Config()
-
 os.environ['TF_ENABLE_ONEDNN_OPTS'] = '0'
 
 # === Augmentations ===
 train_augmentation_parameters = config['augmentation']['train']
 val_augmentation_parameters = config['augmentation']['val']
 
-# === Parametri da config ===
+# === Parametri ===
 drop_rate = config['dropout']
 batch = config['batch_size']
 
@@ -31,6 +32,7 @@ else:
     model = ImageClassificationModel(config.cfg, drop_rate).build_model()
     print(model.summary())
 
+# === Callback naming ===
 timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
 model_name = f"{batch}_{config['input_shape'][0]}_{config['input_shape'][1]}_{config['input_shape'][2]}_{timestamp}"
 
@@ -42,12 +44,15 @@ callback_instance = ModelCheckpointCallback(
 )
 model_checkpoint_callback = callback_instance.get_callback()
 
+# === AUTO SPLIT ===
+train_dir, val_dir = perform_auto_split(config)
+
 # === Data Generators ===
 train_datagen = tf.keras.preprocessing.image.ImageDataGenerator(**train_augmentation_parameters)
 test_datagen = tf.keras.preprocessing.image.ImageDataGenerator(**val_augmentation_parameters)
 
 train_generator = train_datagen.flow_from_directory(
-    config['train_dir'],
+    train_dir,
     target_size=tuple(config['input_shape'][:2]),
     batch_size=batch,
     class_mode='binary',
@@ -55,7 +60,7 @@ train_generator = train_datagen.flow_from_directory(
 )
 
 validation_generator = test_datagen.flow_from_directory(
-    config['val_dir'],
+    val_dir,
     target_size=tuple(config['input_shape'][:2]),
     batch_size=batch,
     class_mode='binary',
@@ -65,7 +70,7 @@ validation_generator = test_datagen.flow_from_directory(
 if config['show_augmentations']:
     show_augmentations(batch, train_generator)
 
-# === Ottimizzatore e compilazione ===
+# === Compilazione modello ===
 lr_schedule = tf.keras.optimizers.schedules.ExponentialDecay(
     config['lr'],
     decay_rate=0.99,
