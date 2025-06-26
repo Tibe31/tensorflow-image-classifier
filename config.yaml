@@ -51,4 +51,5 @@ auto_split:
   enabled: true
   source_dir: "st1"
   output_dir: "tmp_split"
-  val_split: 0.1
+  val_split: 0.085
+  test_split: 0.05
