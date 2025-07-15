@@ -35,9 +35,16 @@ else:
 timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
 model_name = f"{batch}_{config['input_shape'][0]}_{config['input_shape'][1]}_{config['input_shape'][2]}_{timestamp}"
 
+
+monitor_metric = config['monitor_metric']
+if config['classes'] == 2:
+    monitor_metric = 'val_binary_accuracy'
+else:
+    monitor_metric = 'val_accuracy'
+
 callback_instance = ModelCheckpointCallback(
     os.path.join(config['checkpoint_filepath'], model_name),
-    monitor=config['monitor_metric'],
+    monitor=monitor_metric,
     mode=config['mode'],
     save_best_only=True
 )
