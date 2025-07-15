@@ -2,12 +2,11 @@ import tensorflow as tf
 import datetime
 import os
 import numpy as np
-
 from utils.config_loader import Config
 from model.image_classification_model import ImageClassificationModel
 from utils.utils import show_augmentations
 from utils.callbacks import ModelCheckpointCallback
-from utils.data_splitter import perform_auto_split  # ⬅️ nuovo import
+from utils.data_splitter import perform_auto_split
 
 # === CONFIG ===
 config = Config()
@@ -51,11 +50,31 @@ train_dir, val_dir, test_dir = perform_auto_split(config)
 train_datagen = tf.keras.preprocessing.image.ImageDataGenerator(**train_augmentation_parameters)
 test_datagen = tf.keras.preprocessing.image.ImageDataGenerator(**val_augmentation_parameters)
 
+# === Class mode e configurazione dinamica ===
+num_classes = config['classes']
+
+if num_classes == 2:
+    final_class_mode = 'binary'
+    final_loss = tf.keras.losses.BinaryCrossentropy(name='loss')
+    final_metrics = [
+        tf.keras.metrics.BinaryAccuracy(threshold=0.5),
+        tf.keras.metrics.FalsePositives(),
+        tf.keras.metrics.FalseNegatives(),
+    ]
+else:
+    final_class_mode = 'categorical'  # oppure 'sparse' se non usi one-hot encoding
+    final_loss = tf.keras.losses.CategoricalCrossentropy(name='loss')
+    final_metrics = [
+        tf.keras.metrics.CategoricalAccuracy(name='accuracy'),
+        tf.keras.metrics.TopKCategoricalAccuracy(k=3, name='top_3_accuracy')
+    ]
+
+
 train_generator = train_datagen.flow_from_directory(
     train_dir,
     target_size=tuple(config['input_shape'][:2]),
     batch_size=batch,
-    class_mode='binary',
+    class_mode=final_class_mode,
     shuffle=True
 )
 
@@ -63,7 +82,7 @@ validation_generator = test_datagen.flow_from_directory(
     val_dir,
     target_size=tuple(config['input_shape'][:2]),
     batch_size=batch,
-    class_mode='binary',
+    class_mode=final_class_mode,
     shuffle=False
 )
 
@@ -80,12 +99,8 @@ lr_schedule = tf.keras.optimizers.schedules.ExponentialDecay(
 
 model.compile(
     optimizer=tf.keras.optimizers.Adam(learning_rate=lr_schedule),
-    loss=tf.keras.losses.BinaryCrossentropy(name='loss'),
-    metrics=[
-        tf.keras.metrics.BinaryAccuracy(threshold=0.5),
-        tf.keras.metrics.FalsePositives(),
-        tf.keras.metrics.FalseNegatives(),
-    ]
+    loss=final_loss,
+    metrics=final_metrics 
 )
 
 # === Addestramento ===

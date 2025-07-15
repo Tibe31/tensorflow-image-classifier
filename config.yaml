@@ -9,9 +9,10 @@ batch_size: 8
 
 # === Model Settings ===
 use_pretrained_model: false
-pretrained_model_path: ""  # Inserire se use_pretrained_model è true
-dropout: 0.5
-gaussian_noise: 1
+pretrained_model_path: "modelli/4_640_640_3_20250610_154520"  # Inserire se use_pretrained_model è true
+dropout: 0.95
+gaussian_noise: 2
+classes : 2
 
 # === Training Configuration ===
 epochs: 600
@@ -23,12 +24,7 @@ checkpoint_filepath: modelli/
 monitor_metric: val_binary_accuracy
 mode: max
 
-# === Label Dictionary (definire manualmente se necessario) ===
-label_dictionary:
-  KO: 0
-  OK: 1
-# oppure generare dinamicamente via script Python:
-# label_dictionary = {label: idx for idx, label in enumerate(sorted(os.listdir(train_dir)))}
+label_dictionary = {label: idx for idx, label in enumerate(sorted(os.listdir(train_dir)))}
 
 # === Augmentation Parameters ===
 show_augmentations: false
