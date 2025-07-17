@@ -10,3 +10,6 @@
 # Ignora tutte le immagini dentro la cartella immagini_st3 (e sottocartelle)
 immagini_st3/**/*.jpg
 immagini_st3/**/*.png
+
+# Ignora le directory __pycache__
+__pycache__/
