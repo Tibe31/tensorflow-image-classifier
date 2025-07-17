@@ -17,6 +17,9 @@ def load_config():
 
 # Funzione per salvare la configurazione
 def save_config(config_data):
+    # Ensure input_shape is a list before saving
+    if 'input_shape' in config_data and isinstance(config_data['input_shape'], tuple):
+        config_data['input_shape'] = list(config_data['input_shape'])
     with open('config.yaml', 'w') as f:
         yaml.dump(config_data, f)
 
@@ -90,11 +93,21 @@ def main():
         if st.button("Esegui Split del Dataset"):
             if config_data['auto_split']['enabled']:
                 with st.spinner("Esecuzione dello split in corso..."):
-                    train_dir, val_dir, test_dir = perform_auto_split(config_data)
+                    train_dir_actual, val_dir_actual, test_dir_actual = perform_auto_split(config_data)
                     st.success(f"Split completato con successo!")
-                    st.info(f"Train dir: {train_dir}")
-                    st.info(f"Validation dir: {val_dir}")
-                    st.info(f"Test dir: {test_dir}")
+                    st.info(f"Train dir: {train_dir_actual}")
+                    st.info(f"Validation dir: {val_dir_actual}")
+                    st.info(f"Test dir: {test_dir_actual}")
+
+                    # Update config_data with the actual paths
+                    config_data['train_dir'] = train_dir_actual
+                    config_data['val_dir'] = val_dir_actual
+                    config_data['test_path'] = test_dir_actual # Assuming test_path should be test_dir
+
+                    # Save the updated config
+                    save_config(config_data)
+                    st.success("Percorsi di training/validazione/test aggiornati e salvati nella configurazione.")
+                    st.rerun() # Rerun to update the text inputs in the Training tab
             else:
                 st.warning("L'auto-split non è abilitato nella configurazione.")
 
