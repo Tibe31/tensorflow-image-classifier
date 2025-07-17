@@ -20,11 +20,11 @@ class ModelCheckpointCallback:
                 
                 # Inizializza i valori migliori in base al mode
                 if self.mode == 'max':
-                    self.best_metric = -np.Inf
+                    self.best_metric = -np.inf
                 else:  # mode == 'min'
-                    self.best_metric = np.Inf
+                    self.best_metric = np.inf
                 
-                self.best_loss = np.Inf
+                self.best_loss = np.inf
 
             def on_epoch_end(self, epoch, logs=None):
                 logs = logs or {}

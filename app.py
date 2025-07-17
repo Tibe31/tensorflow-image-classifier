@@ -1,4 +1,3 @@
-
 import streamlit as st
 import yaml
 from utils.config_loader import Config
@@ -10,6 +9,7 @@ from tensorflow.keras.preprocessing import image
 import numpy as np
 from utils.utils import show_augmentations
 from PIL import Image
+from streamlit_option_menu import option_menu
 
 # Funzione per caricare la configurazione
 def load_config():
@@ -53,11 +53,13 @@ def main():
     if 'training_running' not in st.session_state:
         st.session_state.training_running = False
 
-    # Sidebar per la navigazione
-    st.sidebar.title("Navigazione")
-    page = st.sidebar.radio("Vai a:", ["Configurazione e Preparazione Dati", "Training", "Inferenza"])
+    with st.sidebar:
+        page = option_menu("Navigazione", 
+                           ["Configurazione", "Training", "Inferenza"],
+                           icons=['gear', 'activity', 'search'], 
+                           menu_icon="cast", default_index=0)
 
-    if page == "Configurazione e Preparazione Dati":
+    if page == "Configurazione":
         st.header("1. Configurazione e Preparazione Dati")
 
         # Mostra e modifica la configurazione
@@ -191,7 +193,7 @@ def main():
                         st.session_state.training_process = None
                     st.session_state.training_running = False
                     st.warning("Training interrotto!")
-                    st.experimental_rerun() # Ricarica la pagina per aggiornare lo stato del pulsante
+                    st.rerun() # Ricarica la pagina per aggiornare lo stato del pulsante
             else:
                 if st.button("Avvia Training"):
                     st.info("Avvio del processo di training...")
@@ -226,7 +228,7 @@ def main():
                         bufsize=1,
                         universal_newlines=True
                     )
-                    st.experimental_rerun() # Ricarica la pagina per mostrare il pulsante Stop
+                    st.rerun() # Ricarica la pagina per mostrare il pulsante Stop
 
             # Mostra l'output del training se in esecuzione
             if st.session_state.training_running and st.session_state.training_process:
@@ -257,7 +259,7 @@ def main():
                     st.session_state.training_running = False
                     st.session_state.training_process = None
                     st.success("Training completato!")
-                    st.experimental_rerun() # Ricarica la pagina per aggiornare lo stato del pulsante
+                    st.rerun() # Ricarica la pagina per aggiornare lo stato del pulsante
 
 
     elif page == "Inferenza":
