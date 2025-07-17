@@ -42,6 +42,36 @@ def predict(image_input, model_path, input_shape):
     prediction = model.predict(img_array)
     return prediction
 
+# Funzione per mostrare una galleria di immagini da una directory
+def display_image_gallery(directory, max_images=16):
+    if not os.path.isdir(directory):
+        st.warning(f"La cartella specificata non esiste: {directory}")
+        return
+
+    image_files = []
+    for root, _, files in os.walk(directory):
+        for file in files:
+            if file.lower().endswith(('.png', '.jpg', '.jpeg', '.gif', '.bmp')):
+                image_files.append(os.path.join(root, file))
+            if len(image_files) >= max_images:
+                break
+        if len(image_files) >= max_images:
+            break
+
+    if not image_files:
+        st.info(f"Nessuna immagine trovata nella cartella: {directory}")
+        return
+
+    st.write("### Anteprima Immagini")
+    cols = st.columns(4) # 4 colonne per la galleria
+    for i, img_path in enumerate(image_files):
+        with cols[i % 4]:
+            try:
+                img = Image.open(img_path)
+                st.image(img, caption=os.path.basename(img_path), use_container_width=True)
+            except Exception as e:
+                st.error(f"Errore nel caricare l'immagine {os.path.basename(img_path)}: {e}")
+
 # Pagina Principale
 def main():
     st.title("Workflow Classificazione Immagini")
@@ -75,6 +105,9 @@ def main():
         if not os.path.isdir(source_dir):
             st.warning(f"La cartella di origine specificata non esiste o non è una directory valida: {source_dir}")
         config_data['auto_split']['source_dir'] = source_dir
+
+        # Mostra la galleria di immagini dalla cartella di origine
+        display_image_gallery(source_dir, max_images=4)
 
         output_dir = st.text_input("Cartella di output", config_data['auto_split']['output_dir'])
         if not os.path.isdir(output_dir):
@@ -304,7 +337,7 @@ def main():
         if uploaded_file is not None:
             # Mostra l'immagine
             image_to_show = Image.open(uploaded_file)
-            st.image(image_to_show, caption='Immagine Caricata', use_column_width=True)
+            st.image(image_to_show, caption='Immagine Caricata', use_container_width=True)
 
             # Esegui l'inferenza
             if st.button("Esegui Inferenza"):
