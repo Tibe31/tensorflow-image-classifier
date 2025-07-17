@@ -94,7 +94,7 @@ validation_generator = test_datagen.flow_from_directory(
 )
 
 if config['show_augmentations']:
-    show_augmentations(batch, train_generator)
+    show_augmentations(train_dir, batch, config['input_shape'], train_augmentation_parameters)
 
 # === Compilazione modello ===
 lr_schedule = tf.keras.optimizers.schedules.ExponentialDecay(

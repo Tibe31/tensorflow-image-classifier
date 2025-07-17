@@ -1,51 +1,39 @@
-# === Data Directories ===
-train_dir: st1/train
-val_dir: st1/val
-test_path: st1/val
-
-# === Input Configuration ===
-input_shape: [512, 512, 3]
-batch_size: 8
-
-# === Model Settings ===
-use_pretrained_model: false
-pretrained_model_path: "modelli/4_640_640_3_20250610_154520"  # Inserire se use_pretrained_model è true
-dropout: 0.95
-gaussian_noise: 2
-classes : 2
-
-# === Training Configuration ===
-epochs: 600
-lr: 0.001
-decay_after_n_epochs: 5
-
-# === Callbacks and Metrics ===
-checkpoint_filepath: modelli/
-monitor_metric: val_binary_accuracy
-mode: max
-
-label_dictionary = {label: idx for idx, label in enumerate(sorted(os.listdir(train_dir)))}
-
-# === Augmentation Parameters ===
-show_augmentations: false
 augmentation:
   train:
-    rescale: 0.00392156862745098  # 1./255.
-    rotation_range: 3
-    zoom_range: 0.08
-    width_shift_range: 0.03
-    height_shift_range: 0.03
-    brightness_range: [0.7, 1.3]
-    vertical_flip: True
-    horizontal_flip: True
-    fill_mode: constant
+    brightness_range:
+    - 0.7
+    - 1.3
     cval: 0
+    fill_mode: constant
+    height_shift_range: 0.03
+    horizontal_flip: true
+    rescale: 0.00392156862745098
+    rotation_range: 3
+    vertical_flip: true
+    width_shift_range: 0.03
+    zoom_range: 0.08
   val:
-    rescale: 0.00392156862745098  # 1./255.
-
+    rescale: 0.00392156862745098
 auto_split:
   enabled: true
-  source_dir: "st1"
-  output_dir: "tmp_split"
-  val_split: 0.085
+  output_dir: tmp_split
+  source_dir: st1
   test_split: 0.05
+  val_split: 0.085
+batch_size: 8
+checkpoint_filepath: modelli/
+classes: 2
+decay_after_n_epochs: 5
+dropout: 0.5
+epochs: 600
+gaussian_noise: 1
+input_shape: (512, 512, 3)
+lr: 0.001
+mode: max
+monitor_metric: val_binary_accuracy
+pretrained_model_path: ''
+show_augmentations: true
+test_path: st1/val
+train_dir: st1/train
+use_pretrained_model: false
+val_dir: st1/val
