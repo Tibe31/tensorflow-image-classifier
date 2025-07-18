@@ -94,7 +94,7 @@ validation_generator = test_datagen.flow_from_directory(
 )
 
 if config['show_augmentations']:
-    augmentation_image_path = show_augmentations(train_dir, batch, config['input_shape'], train_augmentation_parameters)
+    augmentation_image_path = show_augmentations(train_dir, batch, config['input_shape'], train_augmentation_parameters, config['classes'])
     print(f"AUGMENTATION_IMAGE_PATH:{augmentation_image_path}")
 
 # === Compilazione modello ===

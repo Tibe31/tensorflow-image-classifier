@@ -257,7 +257,8 @@ def main():
                                     train_dir=train_data_dir,
                                     batch_size=config_data['batch_size'],
                                     input_shape=config_data['input_shape'],
-                                    augmentation_parameters=config_data['augmentation']['train']
+                                    augmentation_parameters=config_data['augmentation']['train'],
+                                    num_classes=config_data['classes']
                                 )
                                 st.pyplot(fig)
                                 st.success("Esempi di augmentation visualizzati.")
