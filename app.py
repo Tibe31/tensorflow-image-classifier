@@ -347,6 +347,8 @@ def main():
 
         elif inference_mode == "Cartella":
             folder_path = st.text_input("Inserisci il percorso della cartella")
+            st.info("Suggerimento: Apri la cartella in Esplora File, clicca sulla barra dell'indirizzo in alto, copia il percorso e incollalo qui.")
+
             if st.button("Esegui Inferenza su Cartella"):
                 if not os.path.isdir(folder_path):
                     st.error("Il percorso inserito non è una cartella valida.")
