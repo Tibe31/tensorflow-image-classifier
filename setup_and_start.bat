@@ -3,6 +3,9 @@
 
 SET ENV_NAME=yolov8
 
+:: Imposta la directory corrente come parte del PYTHONPATH
+SET "PYTHONPATH=%CD%;%PYTHONPATH%"
+
 :: 1. Controlla se l'ambiente esiste già
 conda env list | findstr /B /C:"%ENV_NAME% " >nul 2>&1
 IF %ERRORLEVEL% NEQ 0 (
