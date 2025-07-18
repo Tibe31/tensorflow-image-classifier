@@ -314,19 +314,17 @@ def main():
         
         # Seleziona il modello
         model_dir = config_data['checkpoint_filepath']
-        if os.path.exists(model_dir):
-            models = [f for f in os.listdir(model_dir) if f.endswith('.h5') or f.endswith('.keras')]
+        if os.path.isdir(model_dir):
+            # List subdirectories, which are the saved models
+            models = [d for d in os.listdir(model_dir) if os.path.isdir(os.path.join(model_dir, d))]
             if not models:
-                st.warning(f"Nessun modello (.h5 o .keras) trovato nella cartella: {model_dir}. Esegui prima il training.")
+                st.warning(f"Nessun modello (cartella) trovato nella directory: {model_dir}. Esegui prima il training.")
                 return
             
-            # Ordina i modelli per data di modifica (il più recente prima)
-            models.sort(key=lambda f: os.path.getmtime(os.path.join(model_dir, f)), reverse=True)
+            # Sort models by modification time (most recent first)
+            models.sort(key=lambda d: os.path.getmtime(os.path.join(model_dir, d)), reverse=True)
             
-            # Trova l'indice del modello selezionato di default (il più recente)
-            default_model_index = 0
-            
-            selected_model = st.selectbox("Seleziona un modello", models, index=default_model_index)
+            selected_model = st.selectbox("Seleziona un modello", models)
             model_path = os.path.join(model_dir, selected_model)
         else:
             st.warning(f"La cartella dei modelli specificata ({model_dir}) non esiste. Esegui prima il training.")
