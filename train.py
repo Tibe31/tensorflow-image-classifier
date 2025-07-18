@@ -51,7 +51,14 @@ callback_instance = ModelCheckpointCallback(
 model_checkpoint_callback = callback_instance.get_callback()
 
 # === AUTO SPLIT ===
-train_dir, val_dir, test_dir = perform_auto_split(config)
+# train_dir, val_dir, test_dir = perform_auto_split(config)
+
+# === DATA PATHS ===
+# The data split is now handled exclusively by app.py.
+# train.py reads the resulting paths from the configuration.
+train_dir = config['train_dir']
+val_dir = config['val_dir']
+test_dir = config['test_path']
 
 # === Data Generators ===
 train_datagen = tf.keras.preprocessing.image.ImageDataGenerator(**train_augmentation_parameters)
