@@ -43,7 +43,7 @@ IF %ERRORLEVEL% NEQ 0 (
 )
 
 ECHO Avvio dell'applicazione Streamlit...
-streamlit run app.py
+streamlit run src/app.py
 
 ECHO Chiusura dello script.
 PAUSE

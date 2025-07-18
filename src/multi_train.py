@@ -20,12 +20,12 @@ trainings = [
 for t in trainings:
     print(f"\nAvvio training per {t['name']}...")
 
-    # Copia i file nella posizione attesa da Config
-    shutil.copy(t["config_yaml"], "config.yaml")
-    shutil.copy(t["augmentation_yaml"], "augmentation.yaml")
+    # Copia i file nella posizione attesa da train.py (ora in src/)
+    shutil.copy(t["config_yaml"], "src/config.yaml")
+    shutil.copy(t["augmentation_yaml"], "src/augmentation.yaml")
 
-    # Avvia train.py
-    result = subprocess.run(["python", "train.py"])
+    # Avvia train.py (ora in src/scripts/)
+    result = subprocess.run(["python", "src/scripts/train.py"])
 
     if result.returncode != 0:
         print(f"Training {t['name']} fallito. Interruzione.")

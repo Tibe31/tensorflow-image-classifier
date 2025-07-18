@@ -1,8 +1,8 @@
 import streamlit as st
 import os
 import subprocess
-from utils.config_loader import save_config
-from utils.utils import show_augmentations
+from src.utils.config_loader import save_config
+from src.utils.utils import show_augmentations
 
 def render(config_data):
     st.header("2. Training del Modello")
@@ -127,7 +127,7 @@ def render(config_data):
                 st.session_state.training_running = True
                 # Avvia il processo in background e memorizzalo nello stato della sessione
                 st.session_state.training_process = subprocess.Popen(
-                    ['python', 'train.py'],
+                    ['python', 'src/scripts/train.py'],
                     stdout=subprocess.PIPE,
                     stderr=subprocess.STDOUT,
                     text=True,

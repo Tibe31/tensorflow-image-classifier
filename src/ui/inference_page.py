@@ -1,6 +1,6 @@
 import streamlit as st
 import os
-from utils.inference import predict
+from src.utils.inference import predict
 from PIL import Image
 
 def render(config_data):
@@ -43,10 +43,22 @@ def render(config_data):
         folder_path = st.text_input("Inserisci il percorso della cartella")
         st.info("Suggerimento: Apri la cartella in Esplora File, clicca sulla barra dell'indirizzo in alto, copia il percorso e incollalo qui.")
 
+        save_results = st.checkbox("Salva i risultati in cartelle separate (0/1)")
+        output_folder = ""
+        if save_results:
+            output_folder = st.text_input("Cartella di output per i risultati salvati", "./inference_output")
+
         if st.button("Esegui Inferenza su Cartella"):
             if not os.path.isdir(folder_path):
                 st.error("Il percorso inserito non è una cartella valida.")
                 return
+
+            if save_results:
+                if not output_folder:
+                    st.error("Specifica una cartella di output per salvare i risultati.")
+                    return
+                os.makedirs(os.path.join(output_folder, "0"), exist_ok=True)
+                os.makedirs(os.path.join(output_folder, "1"), exist_ok=True)
 
             image_files = [f for f in os.listdir(folder_path) if f.lower().endswith(('.png', '.jpg', '.jpeg'))]
             if not image_files:
@@ -73,6 +85,13 @@ def render(config_data):
                         with col3:
                             st.metric(label="Punteggio", value=f"{score:.4f}")
                         st.divider()
+
+                        if save_results:
+                            output_subfolder = os.path.join(output_folder, str(predicted_class))
+                            output_filename = f"{score:.4f}_{filename}"
+                            output_filepath = os.path.join(output_subfolder, output_filename)
+                            # Load image with PIL and save it
+                            Image.open(img_path).save(output_filepath)
 
                     except Exception as e:
                         st.error(f"Errore durante l'inferenza su {filename}: {e}")

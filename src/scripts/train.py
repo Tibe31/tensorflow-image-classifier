@@ -2,11 +2,11 @@ import tensorflow as tf
 import datetime
 import os
 import numpy as np
-from utils.config_loader import Config
-from model.image_classification_model import ImageClassificationModel
-from utils.utils import show_augmentations
-from utils.callbacks import ModelCheckpointCallback
-from utils.data_splitter import perform_auto_split
+from src.utils.config_loader import Config
+from src.model.image_classification_model import ImageClassificationModel
+from src.utils.utils import show_augmentations
+from src.utils.callbacks import ModelCheckpointCallback
+from src.utils.data_splitter import perform_auto_split
 
 # === CONFIG ===
 config = Config()

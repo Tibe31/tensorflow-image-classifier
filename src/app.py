@@ -1,7 +1,7 @@
 import streamlit as st
 from streamlit_option_menu import option_menu
-from utils.config_loader import load_config
-from ui import config_page, training_page, inference_page
+from src.utils.config_loader import load_config
+from src.ui import config_page, training_page, inference_page
 
 # Pagina Principale
 def main():

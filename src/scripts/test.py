@@ -6,7 +6,7 @@ import tensorflow as tf
 from tensorflow.keras.models import load_model
 from tensorflow.keras.metrics import Metric
 from sklearn.metrics import f1_score
-from config_loader import Config
+from src.utils.config_loader import Config
 
 # ---------------------------
 # Custom F1Score metric

@@ -1,8 +1,8 @@
 import streamlit as st
 import os
-from utils.config_loader import save_config
-from utils.data_splitter import perform_auto_split
-from utils.ui_components import display_image_gallery
+from src.utils.config_loader import save_config
+from src.utils.data_splitter import perform_auto_split
+from src.utils.ui_components import display_image_gallery
 
 def render(config_data):
     st.header("1. Configurazione e Preparazione Dati")
