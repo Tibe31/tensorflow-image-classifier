@@ -1,6 +1,16 @@
 import yaml
 import ast
 
+def load_config(path='config.yaml'):
+    return Config(path=path)
+
+def save_config(config_data, path='config.yaml'):
+    # Ensure input_shape is a list before saving
+    if 'input_shape' in config_data and isinstance(config_data['input_shape'], tuple):
+        config_data['input_shape'] = list(config_data['input_shape'])
+    with open(path, 'w') as f:
+        yaml.dump(config_data, f)
+
 class Config:
     def __init__(self, path='config.yaml'):
         with open(path, 'r') as f:
