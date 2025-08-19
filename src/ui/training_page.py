@@ -82,7 +82,20 @@ def render(config_data):
                             config_data['augmentation'][aug_type][key] = st.number_input(f"{key.replace('_', ' ').capitalize()}", value=value, format="%f", key=f"aug_{aug_type}_{key}_float")
                         elif isinstance(value, list) and len(value) == 2 and all(isinstance(x, (int, float)) for x in value):
                             # Gestione specifica per le liste (es. brightness_range)
-                            slider_tuple = st.slider(f"{key.replace('_', ' ').capitalize()}", float(value[0]), float(value[1]), (float(value[0]), float(value[1])), key=f"aug_{aug_type}_{key}_slider")
+                            if key == 'brightness_range':
+                                # Fixed range for brightness, allowing selection within it
+                                fixed_min_brightness = 0.1 # Example fixed min
+                                fixed_max_brightness = 2.5 # Example fixed max
+                                slider_tuple = st.slider(
+                                    f"{key.replace('_', ' ').capitalize()}",
+                                    fixed_min_brightness,
+                                    fixed_max_brightness,
+                                    (float(value[0]), float(value[1])),
+                                    key=f"aug_{aug_type}_{key}_slider"
+                                )
+                            else:
+                                # Existing logic for other list parameters
+                                slider_tuple = st.slider(f"{key.replace('_', ' ').capitalize()}", float(value[0]), float(value[1]), (float(value[0]), float(value[1])), key=f"aug_{aug_type}_{key}_slider")
                             config_data['augmentation'][aug_type][key] = list(slider_tuple)
                         else:
                             config_data['augmentation'][aug_type][key] = st.text_input(f"{key.replace('_', ' ').capitalize()}", value, key=f"aug_{aug_type}_{key}_text")
